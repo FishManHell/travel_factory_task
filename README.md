@@ -21,21 +21,38 @@ docker compose up -d
 
 This brings up Postgres on `localhost:5432` with the database `vacation_db`.
 
-**2. Backend:**
+**2. Backend.** Create `backend/.env` with:
+
+```
+PORT=3000
+NODE_ENV=development
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=vacation_db
+```
+
+Then:
 
 ```bash
 cd backend
-cp .env.example .env
 npm install
 npm run seed     # adds two users: Alice (Requester), Bob (Validator)
 npm run dev      # API on http://localhost:3000
 ```
 
-**3. Frontend** (in another terminal):
+**3. Frontend** (in another terminal). Create `frontend/.env` with:
+
+```
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+Then:
 
 ```bash
 cd frontend
-cp .env.example .env
 npm install
 npm run dev      # SPA on http://localhost:5173
 ```
@@ -52,11 +69,23 @@ Create the test database once:
 docker exec travel_factory_db psql -U postgres -c "CREATE DATABASE vacation_db_test;"
 ```
 
+Add `backend/.env.test`:
+
+```
+PORT=3001
+NODE_ENV=test
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=vacation_db_test
+```
+
 Then:
 
 ```bash
 cd backend
-cp .env.test.example .env.test
 npm test
 ```
 
