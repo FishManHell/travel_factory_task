@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     synchronize: true,
-    logging: true,
+    logging: process.env.NODE_ENV !== 'test',
     entities: [User, VacationRequest],
 });
 
