@@ -17,5 +17,6 @@ export const requesterFormResolver = yupResolver(
         !!v && v[0] instanceof Date && v[1] instanceof Date && v[1] >= v[0],
       )
       .required('Date is required'),
+    reason: yup.string().max(500, 'Reason is too long').optional(),
   }),
 )

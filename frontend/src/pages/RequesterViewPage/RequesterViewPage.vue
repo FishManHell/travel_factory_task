@@ -1,41 +1,62 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { Form, FormField, type FormSubmitEvent } from '@primevue/forms'
-import { DatePicker, Button, Message, DataTable, Column, Tag } from "primevue";
-import { requesterFormResolver } from "./model/resolver";
-import type { RequesterForm } from "./model/types";
-import type { RequestStatus, VacationRequest } from "@/types/vacationRequest";
-import { statusIcon, statusLabel, statusSeverity } from "@/shared/vacationRequest";
+import {
+  DatePicker,
+  Button,
+  Message,
+  DataTable,
+  Column,
+  Tag,
+  Textarea,
+} from 'primevue'
+import { requesterFormResolver } from './model/resolver'
+import type { RequesterForm } from './model/types'
+import type { RequestStatus, VacationRequest } from '@/types/vacationRequest'
+import type { CreateRequestPayload } from '@/api/requests'
+import { statusIcon, statusLabel, statusSeverity } from '@/shared/vacationRequest'
+import { formatDate } from '@/shared/date'
+import { useCurrentUser } from '@/composables/useCurrentUser'
+import { useRequests } from '@/composables/useRequests'
 import styles from './RequesterViewPage.module.scss'
+
+const { currentUser } = useCurrentUser()
+const { requests, loading, loadRequests, createRequest } = useRequests()
 
 const initialValues: RequesterForm = {
   date: [null, null],
+  reason: '',
 }
 
-const onAdd = (e: FormSubmitEvent) => {
-  if (!e.valid) return
-  console.log(e.values)
+const formKey = ref(0)
+
+const buildPayload = (values: RequesterForm, userId: number): CreateRequestPayload | null => {
+  const [start, end] = values.date
+  if (!start || !end) return null
+  return {
+    userId,
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+    reason: values.reason?.trim() || null,
+  }
 }
 
-const mockRequests: VacationRequest[] = [
-  {
-    id: 1,
-    user: { id: 1, name: 'Alice Johnson' },
-    startDate: '2026-06-01',
-    endDate: '2026-06-07',
-    status: 'pending',
-    rejectionReason: null,
-    createdAt: '2026-05-08T09:30:00.000Z',
-  },
-  {
-    id: 2,
-    user: { id: 1, name: 'Alice Johnson' },
-    startDate: '2026-04-10',
-    endDate: '2026-04-15',
-    status: 'approved',
-    rejectionReason: null,
-    createdAt: '2026-03-20T14:12:00.000Z',
-  },
-]
+const loadOwnRequests = () => loadRequests(currentUser.value?.id)
+
+const onAdd = async (e: FormSubmitEvent) => {
+  if (!e.valid || !currentUser.value) return
+
+  const payload = buildPayload(e.values as RequesterForm, currentUser.value.id)
+  if (!payload) return
+
+  const created = await createRequest(payload)
+  if (!created) return
+
+  formKey.value++
+  await loadOwnRequests()
+}
+
+onMounted(loadOwnRequests)
 
 const getSeverity = (status: RequestStatus) => statusSeverity[status]
 const getIcon = (status: RequestStatus) => statusIcon[status]
@@ -47,6 +68,7 @@ const getIcon = (status: RequestStatus) => statusIcon[status]
 
     <h2 :class="styles.sectionTitle">New request</h2>
     <Form
+      :key="formKey"
       :class="styles.form"
       :initialValues="initialValues"
       :resolver="requesterFormResolver"
@@ -58,6 +80,14 @@ const getIcon = (status: RequestStatus) => statusIcon[status]
           {{ $field.error?.message }}
         </Message>
       </FormField>
+
+      <FormField name="reason" v-slot="$field" :class="styles.formField">
+        <Textarea placeholder="Reason (optional)" rows="3" fluid autoResize />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">
+          {{ $field.error?.message }}
+        </Message>
+      </FormField>
+
       <div :class="styles.formActions">
         <Button type="submit" label="Submit" />
       </div>
@@ -65,12 +95,17 @@ const getIcon = (status: RequestStatus) => statusIcon[status]
 
     <h2 :class="styles.sectionTitle">My requests</h2>
     <div :class="styles.tableWrap">
-      <DataTable :value="mockRequests" scrollable>
+      <DataTable :value="requests" :loading="loading" scrollable>
         <template #empty>
           <span>You have no requests yet</span>
         </template>
         <Column field="startDate" header="Start date" style="min-width: 9rem" />
         <Column field="endDate" header="End date" style="min-width: 9rem" />
+        <Column field="reason" header="Reason" style="min-width: 12rem">
+          <template #body="{ data }: { data: VacationRequest }">
+            {{ data.reason ?? '—' }}
+          </template>
+        </Column>
         <Column field="status" header="Status" style="min-width: 9rem">
           <template #body="{ data } : { data: VacationRequest }">
             <Tag
@@ -80,9 +115,9 @@ const getIcon = (status: RequestStatus) => statusIcon[status]
             />
           </template>
         </Column>
-        <Column field="rejectionReason" header="Rejection reason" style="min-width: 14rem">
+        <Column field="comments" header="Rejection comments" style="min-width: 14rem">
           <template #body="{ data }: { data: VacationRequest }">
-            {{ data.rejectionReason ?? '—' }}
+            {{ data.comments ?? '—' }}
           </template>
         </Column>
       </DataTable>

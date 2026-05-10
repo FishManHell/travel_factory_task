@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useCurrentUser } from "@/composables/useCurrentUser";
+import { useUsers } from '@/composables/useUsers'
 import { Column, DataTable, Button, Tag } from 'primevue'
 import type { User } from "@/types/user";
 import { useRouter } from "vue-router";
@@ -7,14 +9,10 @@ import { AppRoutes, RoutePaths } from "@/router";
 import styles from './HomeViewPage.module.scss'
 
 const { setUser } = useCurrentUser()
+const { users, loading, loadUsers } = useUsers()
 const router = useRouter()
 
-const mockUsers: User[] = [
-  { id: 1, name: 'Alice Johnson', role: 'Requester' },
-  { id: 2, name: 'Bob Smith',     role: 'Requester' },
-  { id: 3, name: 'Carol White',   role: 'Validator' },
-  { id: 4, name: 'David Brown',   role: 'Validator' },
-]
+onMounted(loadUsers)
 
 const onSelect = (user: User) => {
   setUser(user)
@@ -29,7 +27,7 @@ const onSelect = (user: User) => {
     <h1 :class="styles.title">Choose a user</h1>
     <p :class="styles.subtitle">Select an account to sign in as</p>
     <div :class="styles.tableWrap">
-      <DataTable :value="mockUsers" dataKey="id" scrollable>
+      <DataTable :value="users" :loading="loading" dataKey="id" scrollable>
         <template #empty>
           <span>No users found</span>
         </template>

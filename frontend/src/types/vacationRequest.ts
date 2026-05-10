@@ -7,7 +7,8 @@ export interface VacationRequest {
   user: Omit<User, 'role'>
   startDate: string
   endDate: string
+  reason: string | null
   status: RequestStatus
-  rejectionReason: string | null
+  comments: string | null
   createdAt: string
 }

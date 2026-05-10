@@ -11,18 +11,18 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  confirm: [reason: string]
+  confirm: [comments: string]
 }>()
 
-const reason = ref('')
+const comments = ref('')
 
 watch(() => props.visible, (open) => {
-  if (open) reason.value = ''
+  if (open) comments.value = ''
 })
 
 const onCancel = () => emit('update:visible', false)
 const onConfirm = () => {
-  emit('confirm', reason.value.trim())
+  emit('confirm', comments.value.trim())
   emit('update:visible', false)
 }
 </script>
@@ -40,10 +40,13 @@ const onConfirm = () => {
       Reject request from <b>{{ request.user.name }}</b>
       for {{ request.startDate }} – {{ request.endDate }}?
     </p>
+    <p v-if="request?.reason" :class="styles.summary">
+      Reason: <i>{{ request.reason }}</i>
+    </p>
 
-    <label :class="styles.label">Reason</label>
+    <label :class="styles.label">Comments</label>
     <Textarea
-      v-model="reason"
+      v-model="comments"
       rows="4"
       autoResize
       :class="styles.textarea"
@@ -56,7 +59,7 @@ const onConfirm = () => {
         <Button
           label="Reject"
           severity="danger"
-          :disabled="!reason.trim()"
+          :disabled="!comments.trim()"
           @click="onConfirm"
         />
       </div>
