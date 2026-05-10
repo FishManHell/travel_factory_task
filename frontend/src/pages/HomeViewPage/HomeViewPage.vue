@@ -29,7 +29,7 @@ const onSelect = (user: CurrentUser) => {
   <div>
     <h1>Choose a user</h1>
     <p class="subtitle">Select an account to sign in as</p>
-    <DataTable :value="mockUsers">
+    <DataTable :value="mockUsers" dataKey="id">
       <template #empty>
         <h1>No users found</h1>
       </template>

@@ -1,17 +1,17 @@
 import { ref } from 'vue'
-import type {CurrentUser} from "./model/types";
+import type {User} from "@/types/user";
 
 const STORAGE_KEY = 'currentUser'
 
-const readUser = (): CurrentUser | null => {
+const readUser = (): User | null => {
   const raw = localStorage.getItem(STORAGE_KEY)
   return raw ? JSON.parse(raw) : null
 }
 
-const currentUser = ref<CurrentUser | null>(readUser())
+const currentUser = ref<User | null>(readUser())
 
 export const useCurrentUser = () => {
-  const setUser = (user: CurrentUser) => {
+  const setUser = (user: User) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
     currentUser.value = user
   }
