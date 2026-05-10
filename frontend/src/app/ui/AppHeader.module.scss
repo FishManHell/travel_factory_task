@@ -1,0 +1,45 @@
+@use '../../shared/styles/variables' as v;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: v.$color-surface;
+  border-bottom: 1px solid v.$color-border;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: v.$color-text;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: v.$color-secondary;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.userName {
+  white-space: nowrap;
+  max-width: 60vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: v.$breakpoint-tablet) {
+  .header {
+    padding: 1rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+}

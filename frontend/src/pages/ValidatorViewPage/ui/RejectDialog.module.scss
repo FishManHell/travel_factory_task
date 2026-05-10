@@ -1,0 +1,27 @@
+@use '../../../shared/styles/variables' as v;
+
+.summary {
+  font-size: 0.875rem;
+  color: v.$color-secondary;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: v.$color-text;
+}
+
+.textarea {
+  width: 100%;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

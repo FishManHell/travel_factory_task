@@ -1,0 +1,25 @@
+@use './variables' as v;
+
+@mixin pageTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+
+  @media (min-width: v.$breakpoint-tablet) {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+@mixin tableSurface {
+  overflow-x: auto;
+  background-color: v.$color-surface;
+  border-radius: v.$radius-md;
+  border: 1px solid v.$color-border;
+}
+
+@mixin cardSurface {
+  background-color: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+}

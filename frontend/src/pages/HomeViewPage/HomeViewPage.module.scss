@@ -1,0 +1,17 @@
+@use '../../shared/styles/mixins' as m;
+@use '../../shared/styles/variables' as v;
+
+.title {
+  @include m.pageTitle;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: v.$color-muted;
+  margin-bottom: 1.5rem;
+}
+
+.tableWrap {
+  @include m.tableSurface;
+}

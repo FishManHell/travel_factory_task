@@ -1,0 +1,44 @@
+@use '../../shared/styles/mixins' as m;
+@use '../../shared/styles/variables' as v;
+
+.title {
+  @include m.pageTitle;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.form {
+  @include m.cardSurface;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tableWrap {
+  @include m.tableSurface;
+}
+
+@media (min-width: v.$breakpoint-tablet) {
+  .form {
+    padding: 1.5rem;
+  }
+}

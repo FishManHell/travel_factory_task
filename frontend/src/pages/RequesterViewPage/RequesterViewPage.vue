@@ -1,22 +1,11 @@
 <script setup lang="ts">
 import { Form, FormField, type FormSubmitEvent } from '@primevue/forms'
 import { DatePicker, Button, Message, DataTable, Column, Tag } from "primevue";
-import {requesterFormResolver} from "./model/resolver";
-import type {RequesterForm} from "./model/types";
-import type {RequestStatus, VacationRequest} from "@/types/vacationRequest";
-
-const statusSeverity = {
-  pending: 'warn',
-  approved: 'success',
-  rejected: 'danger',
-} as const
-
-
-const statusIcon = {
-  pending: 'pi pi-spin pi-spinner',
-  approved: 'pi pi-check',
-  rejected: 'pi pi-times',
-} as const
+import { requesterFormResolver } from "./model/resolver";
+import type { RequesterForm } from "./model/types";
+import type { RequestStatus, VacationRequest } from "@/types/vacationRequest";
+import { statusIcon, statusLabel, statusSeverity } from "@/shared/vacationRequest";
+import styles from './RequesterViewPage.module.scss'
 
 const initialValues: RequesterForm = {
   date: [null, null],
@@ -50,47 +39,53 @@ const mockRequests: VacationRequest[] = [
 
 const getSeverity = (status: RequestStatus) => statusSeverity[status]
 const getIcon = (status: RequestStatus) => statusIcon[status]
-
 </script>
 
 <template>
   <div>
+    <h1 :class="styles.title">My vacation requests</h1>
+
+    <h2 :class="styles.sectionTitle">New request</h2>
     <Form
+      :class="styles.form"
       :initialValues="initialValues"
-      @submit="onAdd"
       :resolver="requesterFormResolver"
+      @submit="onAdd"
     >
-      <FormField name="date" v-slot="$field">
-        <DatePicker dateFormat="dd/mm/yy" selectionMode="range" showIcon/>
+      <FormField name="date" v-slot="$field" :class="styles.formField">
+        <DatePicker dateFormat="dd/mm/yy" selectionMode="range" showIcon fluid />
         <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">
           {{ $field.error?.message }}
         </Message>
       </FormField>
-      <Button type="submit" label="Submit"/>
+      <div :class="styles.formActions">
+        <Button type="submit" label="Submit" />
+      </div>
     </Form>
 
-
-    <DataTable :value="mockRequests">
-      <template #empty>
-        <h1>No data</h1>
-      </template>
-      <Column field="startDate" header="Start date" />
-      <Column field="endDate" header="End date" />
-      <Column field="status" header="Status">
-        <template #body="{ data }">
-          <Tag
-            :value="data.status"
-            :severity="getSeverity(data.status)"
-            :icon="getIcon(data.status)"
-
-          />
+    <h2 :class="styles.sectionTitle">My requests</h2>
+    <div :class="styles.tableWrap">
+      <DataTable :value="mockRequests" scrollable>
+        <template #empty>
+          <span>You have no requests yet</span>
         </template>
-      </Column>
-      <Column field="rejectionReason" header="Rejection reason">
-        <template #body="{ data }: { data: VacationRequest }">
-          {{ data.rejectionReason ?? '—' }}
-        </template>
-      </Column>
-    </DataTable>
+        <Column field="startDate" header="Start date" style="min-width: 9rem" />
+        <Column field="endDate" header="End date" style="min-width: 9rem" />
+        <Column field="status" header="Status" style="min-width: 9rem">
+          <template #body="{ data } : { data: VacationRequest }">
+            <Tag
+              :value="statusLabel[data.status]"
+              :severity="getSeverity(data.status)"
+              :icon="getIcon(data.status)"
+            />
+          </template>
+        </Column>
+        <Column field="rejectionReason" header="Rejection reason" style="min-width: 14rem">
+          <template #body="{ data }: { data: VacationRequest }">
+            {{ data.rejectionReason ?? '—' }}
+          </template>
+        </Column>
+      </DataTable>
+    </div>
   </div>
 </template>

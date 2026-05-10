@@ -1,0 +1,21 @@
+@use '../../shared/styles/mixins' as m;
+@use '../../shared/styles/variables' as v;
+
+.title {
+  @include m.pageTitle;
+}
+
+.tableWrap {
+  @include m.tableSurface;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.empty {
+  color: v.$color-muted;
+  font-size: 0.875rem;
+}
